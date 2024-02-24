@@ -9,38 +9,179 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.example.demo.commands.CommandRegistry;
+
 
 public class App {
 
+    //  Initialize repositories
+    private final ITaskRepository taskRepository = new TaskRepositoryImpl();
+    private final IFilterFactory factory = new FilterFactoryImpl(taskRepository);
+      // Initialize services
+    private final ITaskService taskService = new TaskServiceImpl(taskRepository, factory);
     public static void main(String[] args) {
-        if (args.length != 1){
-            throw new RuntimeException();
-        }
-        List<String> commandLineArgs = new LinkedList<>(Arrays.asList(args));
-        run(commandLineArgs);
-    }
+    
+        // Test your code by ading commands in sample_input/sample_input_one.txt
+        // Run run.sh script using "bash run.sh" in your terminal.
+        if (args.length == 1){
+            List<String> commandLineArgs = new LinkedList<>(Arrays.asList(args));
+            String inputFile = commandLineArgs.get(0).split("=")[1];
+            try {
+                List<String> file_commands = Files.readAllLines(Paths.get(inputFile));
+                // Execute the commands
+                new App().run(file_commands);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }        
 
-    public static void run(List<String> commandLineArgs){
+        // OR
+        // Test your code by ading commands in this list
+        // List<String> inplace_commands = new LinkedList<>(){
+        //     {
+        //         add("ADD_TASK,LLD-1,SDE-2 Problem Statements,ENGINEERING+PRODUCT,2023-09-20");
+        //         add("ADD_TASK,LLD-2,UI/UX,DESIGN+PRODUCT,2023-09-12");
+        //         add("ADD_TASK,LLD-3,SDE-3 Problem Statements,ENGINEERING,2023-09-13");
+        //         add("ADD_TASK,MENTOR,product management,PRODUCT,2023-09-14");
+        //         add("GET_TASK,1");
+        //         add("GET_TASK,2");
+        //         add("GET_TASK,3");
+        //         add("GET_TASK,4");
+        //         add("GET_TASK,5");
+        //         add("MODIFY_TASK,1,null,null,2023-9-14");
+        //         add("MODIFY_TASK,2,UI/UX FIGMA,null,2023-09-20");
+        //         add("MODIFY_TASK,3,Engineering Problem Statement,null,null");
+        //         add("MODIFY_TASK,4,null,PRODUCT+ENGINEERING,null");
+        //         add("REMOVED_TASK,1");
+        //         add("CHANGE_TASK_STATUS,2,IN_PROGRESS");
+        //         add("CHANGE_TASK_STATUS,3,COMPLETED");
+        //         add("CHANGE_TASK_STATUS,4,COMPLETED");
+        //         add("LIST_TASK,COMPLETED,ASC");
+        //         add("LIST_TASK");
+        //         add("GET_ACTIVITY_LOG");
+        //     }
+        // };
 
-        Configuration conf = Configuration.getInstance();
+        // new App().run(inplace_commands);
+ 
+     }
 
-        CommandRegistry commandRegistry = conf.getCommandRegistry();
-        
-        String inputFile = commandLineArgs.get(0).split("=")[1];
+    public void run(List<String> commands){
 
-        try(BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
-
-            while (true) {
-                String line = reader.readLine();
-                if (line == null){
+        Iterator<String> it = commands.iterator();
+        while(it.hasNext()){
+            String line = it.next();
+                if(line == null){
                     break;
                 }
-                commandRegistry.invokeCommand(line);
-            }
+                List<String> tokens = Arrays.asList(line.split(","));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                try {
+                    //Execute Services
+                    switch(tokens.get(0)){
+                        case "ADD_TASK":
+                            ADD_TASK(tokens);
+                            break;
+                        case "LIST_TASK":
+                            LIST_TASK(tokens);
+                            break;
+                        case "GET_TASK":
+                            GET_TASK(tokens);
+                            break;
+                        case "MODIFY_TASK":
+                            MODIFY_TASK(tokens);
+                            break;
+                        case "REMOVED_TASK":
+                            REMOVED_TASK(tokens);
+                            break;
+                        case "CHANGE_TASK_STATUS":
+                            CHANGE_TASK_STATUS(tokens);
+                            break;
+                        case "GET_ACTIVITY_LOG":
+                            GET_ACTIVITY_LOG(tokens);
+                            break;
+                        case "GET_STATISTICS":
+                            GET_STATISTICS(tokens);
+                            break;
+                        // Add More case statements below to support other commands
+                       
+                        default:
+                        throw new RuntimeException("INVALID_COMMAND");
+                }
+                } catch (Exception e) {
+                    System.out.println("ERROR: " + e.getMessage());
+                }
         }
+    }
+
+
+    // CREATE_TASK
+    private void ADD_TASK(List<String> tokens){
+        String[] tagsArray = tokens.get(3).split("\\+");
+        List<Tag> tags = new ArrayList<>();
+        for(String str: tagsArray){
+            tags.add(new Tag(str));
+        }
+
+        Task task = new Task(tokens.get(1), tokens.get(2), tags, tokens.get(4));
+        String addtask = taskService.addTask(task);
+        System.out.println(addtask);
+    }
+
+    // LIST_TASK
+    private void LIST_TASK(List<String> tokens){
+        Filter filter;
+        if(tokens.size() == 1){
+            filter = new Filter(null, null);
+        } else {
+            filter = new Filter(tokens.get(1), tokens.get(2));
+        }
+        String tlist = taskService.taskList(filter);
+        System.out.println(tlist);
+    }
+
+    // GET_TASK
+    private void GET_TASK(List<String> tokens){
+        int id = Integer.parseInt(tokens.get(1));
+        String ans = taskService.getTask(id);
+        System.out.println(ans);
+    }
+
+    // MODIFY_TASK
+    private void MODIFY_TASK(List<String> tokens){
+        int id = Integer.parseInt(tokens.get(1));
+        String[] tagsArray = tokens.get(3).split("\\+");
+        List<Tag> tags = new ArrayList<>();
+        for(String str: tagsArray){
+            tags.add(new Tag(str));
+        }
+        String ans = taskService.modifyTask(id, tokens.get(2), tags, tokens.get(4));
+        System.out.println(ans);
+    }
+
+    // REMOVE_TASK
+    private void REMOVED_TASK(List<String> tokens){
+        int id = Integer.parseInt(tokens.get(1));
+        String ans = taskService.removeTask(id);
+        System.out.println(ans);
+    }
+
+    // CHANGE_TASK_STATUS
+    private void  CHANGE_TASK_STATUS(List<String> tokens){
+        int id = Integer.parseInt(tokens.get(1));
+        String ans = taskService.changeTaskStatus(id, TaskStatus.valueOf(tokens.get(2)));
+        System.out.println(ans);
+    }
+
+    // GET_TASK_ACTIVITY
+    private void  GET_ACTIVITY_LOG(List<String> tokens){
+        String ans = taskService.getActivityLog();
+        System.out.println(ans);
+    }
+
+     // GET_STATISCIS
+    private void  GET_STATISTICS(List<String> tokens){
+        String ans = taskService.getStatistics();
+        System.out.println(ans);
     }
 }
