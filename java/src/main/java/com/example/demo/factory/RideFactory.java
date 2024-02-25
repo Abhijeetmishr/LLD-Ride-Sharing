@@ -1,12 +1,13 @@
 package com.example.demo.factory;
 
+import com.example.demo.entities.VehicleType;
 import com.example.demo.repositories.IRideRepository;
 import com.example.demo.strategy.IRideSelectionStrategy;
 import com.example.demo.strategy.MostVacantRideStrategy;
+import com.example.demo.strategy.MultipleRideSelectionStrategy;
 import com.example.demo.strategy.PreferredVehicleStrategy;
 
 public class RideFactory implements IRideFactory{
-    private IRideSelectionStrategy rideSelectionStrategy;
     private IRideRepository rideRepository;
 
     public RideFactory(IRideRepository rideRepository){
@@ -14,11 +15,21 @@ public class RideFactory implements IRideFactory{
     }
 
     public IRideSelectionStrategy createSelectionStrategy(String selectionStrategy){
-        if(selectionStrategy.equals("Most Vacant")){
-           this.rideSelectionStrategy = new MostVacantRideStrategy(rideRepository);
-        }else {
-            this.rideSelectionStrategy = new PreferredVehicleStrategy(rideRepository);
+
+        for (VehicleType vehicleType : VehicleType.values()) {
+            if (vehicleType.name().equals(selectionStrategy)) {
+                selectionStrategy = "Preferred Vehicle";
+                break;
+            }
         }
-        return rideSelectionStrategy;
+        
+        switch (selectionStrategy) {
+            case "Most Vacant":
+                return new MostVacantRideStrategy(rideRepository);
+            case "Preferred Vehicle":
+                return new PreferredVehicleStrategy(rideRepository);
+            default:
+                return new MultipleRideSelectionStrategy(rideRepository);
+        }
     }
 }

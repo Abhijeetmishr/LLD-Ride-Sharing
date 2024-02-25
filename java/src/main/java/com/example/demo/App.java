@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.example.demo.entities.Gender;
+import com.example.demo.entities.VehicleType;
 import com.example.demo.factory.IRideFactory;
 import com.example.demo.factory.RideFactory;
 import com.example.demo.repositories.IRideRepository;
