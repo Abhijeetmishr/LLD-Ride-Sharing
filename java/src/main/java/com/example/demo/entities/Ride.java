@@ -1,5 +1,10 @@
 package com.example.demo.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class Ride {
     private String Id;
     private String offeredBy;
@@ -33,69 +38,5 @@ public class Ride {
     //     this.destination = other.destination;
     //     this.status = other.status;
     // }
-
-    public String getId() {
-        return Id;
-    }
-
-    public void setId(String Id) {
-        this.Id = Id;
-    }
-
-    public String getOfferBy() {
-        return offeredBy;
-    }
-
-    public void setOfferBy(String offeredBy) {
-        this.offeredBy = offeredBy;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public Long getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Long availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public String getVehicle_name() {
-        return vehicle_name;
-    }
-
-    public void setVehicle_name(String vehicle_name) {
-        this.vehicle_name = vehicle_name;
-    }
-
-    public String getVehicle_no() {
-        return vehicle_no;
-    }
-
-    public void setVehicle_no(String vehicle_no) {
-        this.vehicle_no = vehicle_no;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    public RideStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RideStatus status) {
-        this.status = status;
-    }
 
 }

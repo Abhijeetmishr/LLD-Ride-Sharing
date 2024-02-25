@@ -7,6 +7,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class User {
     private Long Id;
     private String user_name;
@@ -34,38 +39,6 @@ public class User {
         this.vehicles = other.vehicles;
         this.offered = other.offered;
         this.taken = other.taken;
-    }
-
-    public Long getId() {
-        return Id;
-    }
-
-    public void setId(Long id) {
-        Id = id;
-    }
-
-    public String getUser_name() {
-        return user_name;
-    }
-
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public Long getAge() {
-        return age;
-    }
-
-    public void setAge(Long age) {
-        this.age = age;
     }
 
     public List<Vehicle> getVehicles() {

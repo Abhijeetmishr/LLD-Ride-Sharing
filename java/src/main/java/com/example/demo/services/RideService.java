@@ -44,12 +44,12 @@ public class RideService implements IRideService {
     
         user.setOffered(ride);
         userRepository.update(user.getId(), user);
-        return "Ride offered by " + ride.getOfferBy();
+        return "Ride offered by " + ride.getOfferedBy();
     }
 
     private boolean rideAlreadyOffered(String user_name,String vehicle_name, String vehicle_no) {
         return rideRepository.findAll().stream().anyMatch(ride ->
-                 ride.getOfferBy().equals(user_name) && 
+                 ride.getOfferedBy().equals(user_name) && 
                  ride.getVehicle_name().equals(vehicle_name) &&
                  ride.getVehicle_no().equals(vehicle_no));
     }

@@ -29,7 +29,7 @@ public class RideRepository implements IRideRepository {
     @Override
     public Optional<Ride> findByUserName(String user_name) {
         return storage.values().stream().findAny().filter(ride -> 
-            ride.getOfferBy().equals(user_name));
+            ride.getOfferedBy().equals(user_name));
     }
 
     @Override
