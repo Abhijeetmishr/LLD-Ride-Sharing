@@ -19,7 +19,7 @@ public class UserService implements IUserService {
         if(!isExist){
             User entity = new User(user_name, gender, age);
             User user = userRepository.save(entity);
-            return user.getId() + "";
+            return user.getId() + " " + user.getUser_name();
         } else {
             throw new RuntimeException("user already registered !");
         }

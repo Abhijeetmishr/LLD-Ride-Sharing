@@ -28,9 +28,16 @@ public class UserRepository implements IUserRepository{
     }
 
     @Override
-    public boolean exists(String user_name) {
-        return storage.values().stream().anyMatch(val -> 
-                        val.getUser_name().equals(user_name));
+    public boolean exists(String user_name){
+        return storage.values().stream().anyMatch(user -> 
+                user.getUser_name().equals(user_name));
+    }
+
+    @Override
+    public Optional<User> findByUserName(String user_name) {
+        return storage.values().stream()
+                .filter(user -> user.getUser_name().equals(user_name))
+                .findAny();
     }
 
     @Override

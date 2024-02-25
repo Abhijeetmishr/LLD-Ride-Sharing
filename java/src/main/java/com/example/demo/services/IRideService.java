@@ -1,6 +1,5 @@
 package com.example.demo.services;
 
-import com.example.demo.entities.SelectionStrategy;
 
 /**
  * Bonus Question:
@@ -8,7 +7,7 @@ import com.example.demo.entities.SelectionStrategy;
  */
 public interface IRideService {
     String offer_ride(String driver, String source, Long seats, String vehicle_name, String vehicle_no, String destination);
-    String select_ride(String user_name, String source, String destination, Long seats, SelectionStrategy selectionStrategy);
-    String end_ride(Long ride_id);
+    String select_ride(String user_name, String source, String destination, Long seats, String selectionStrategy);
+    String end_ride(String ride_id);
     String ride_stats();
 }

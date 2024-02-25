@@ -10,6 +10,7 @@ public interface IUserRepository {
     User update(Long Id, User user);
     boolean exists(String user_name);
     Optional<User> findById(Long Id);
+    Optional<User> findByUserName(String user_name);
     List<User> findAll();
     void deleteById(Long Id);
 }

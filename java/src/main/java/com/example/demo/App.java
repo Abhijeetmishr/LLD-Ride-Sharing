@@ -6,63 +6,93 @@ package com.example.demo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.example.demo.entities.Gender;
+import com.example.demo.factory.IRideFactory;
+import com.example.demo.factory.RideFactory;
+import com.example.demo.repositories.IRideRepository;
+import com.example.demo.repositories.IUserRepository;
+import com.example.demo.repositories.IVehicleRepository;
+import com.example.demo.repositories.RideRepository;
+import com.example.demo.repositories.UserRepository;
+import com.example.demo.repositories.VehicleRepository;
+import com.example.demo.services.IRideService;
+import com.example.demo.services.IUserService;
+import com.example.demo.services.IVehicleService;
+import com.example.demo.services.RideService;
+import com.example.demo.services.UserService;
+import com.example.demo.services.VehicleService;
 
 
 
 public class App {
 
     //  Initialize repositories
-    private final ITaskRepository taskRepository = new TaskRepositoryImpl();
-    private final IFilterFactory factory = new FilterFactoryImpl(taskRepository);
+    private final IUserRepository userRepository = new UserRepository();
+    private final IVehicleRepository vehicleRepository = new VehicleRepository();
+    private final IRideRepository rideRepository = new RideRepository();
+    private final IRideFactory rideFactory = new RideFactory(rideRepository);
+
       // Initialize services
-    private final ITaskService taskService = new TaskServiceImpl(taskRepository, factory);
+    private final IUserService userService = new UserService(userRepository);
+    private final IVehicleService vehicleService = new VehicleService(userRepository, vehicleRepository);
+    private final IRideService rideService = new RideService(userRepository, vehicleRepository, rideRepository, rideFactory);
+
     public static void main(String[] args) {
     
         // Test your code by ading commands in sample_input/sample_input_one.txt
         // Run run.sh script using "bash run.sh" in your terminal.
-        if (args.length == 1){
-            List<String> commandLineArgs = new LinkedList<>(Arrays.asList(args));
-            String inputFile = commandLineArgs.get(0).split("=")[1];
-            try {
-                List<String> file_commands = Files.readAllLines(Paths.get(inputFile));
-                // Execute the commands
-                new App().run(file_commands);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return;
-        }        
+        // if (args.length == 1){
+        //     List<String> commandLineArgs = new LinkedList<>(Arrays.asList(args));
+        //     String inputFile = commandLineArgs.get(0).split("=")[1];
+        //     try {
+        //         List<String> file_commands = Files.readAllLines(Paths.get(inputFile));
+        //         // Execute the commands
+        //         new App().run(file_commands);
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        //     return;
+        // }        
 
         // OR
         // Test your code by ading commands in this list
-        // List<String> inplace_commands = new LinkedList<>(){
-        //     {
-        //         add("ADD_TASK,LLD-1,SDE-2 Problem Statements,ENGINEERING+PRODUCT,2023-09-20");
-        //         add("ADD_TASK,LLD-2,UI/UX,DESIGN+PRODUCT,2023-09-12");
-        //         add("ADD_TASK,LLD-3,SDE-3 Problem Statements,ENGINEERING,2023-09-13");
-        //         add("ADD_TASK,MENTOR,product management,PRODUCT,2023-09-14");
-        //         add("GET_TASK,1");
-        //         add("GET_TASK,2");
-        //         add("GET_TASK,3");
-        //         add("GET_TASK,4");
-        //         add("GET_TASK,5");
-        //         add("MODIFY_TASK,1,null,null,2023-9-14");
-        //         add("MODIFY_TASK,2,UI/UX FIGMA,null,2023-09-20");
-        //         add("MODIFY_TASK,3,Engineering Problem Statement,null,null");
-        //         add("MODIFY_TASK,4,null,PRODUCT+ENGINEERING,null");
-        //         add("REMOVED_TASK,1");
-        //         add("CHANGE_TASK_STATUS,2,IN_PROGRESS");
-        //         add("CHANGE_TASK_STATUS,3,COMPLETED");
-        //         add("CHANGE_TASK_STATUS,4,COMPLETED");
-        //         add("LIST_TASK,COMPLETED,ASC");
-        //         add("LIST_TASK");
-        //         add("GET_ACTIVITY_LOG");
-        //     }
-        // };
+        List<String> inplace_commands = new LinkedList<>(){
+            {
+                add("ADD_USER,Rohan,M,36");
+                add("ADD_VEHICLE,Rohan,Swift,KA-01-12345");
+                add("ADD_USER,Shashank,M,29");
+                add("ADD_VEHICLE,Shashank,Baleno,TS-05-62395");
+                add("ADD_USER,Nandini,F,29");
+                add("ADD_USER,Shipra,F,27");
+                add("ADD_VEHICLE,Shipra,Polo,KA-05-41491");
+                add("ADD_VEHICLE,Shipra,Activa,KA-12-12332");
+                add("ADD_USER,Gaurav,M,29");
+                add("ADD_USER,Rahul,M,35");
+                add("ADD_VEHICLE,Rahul,XUV,KA-05-1234");
+                add("OFFER_RIDE,Rohan,Hyderabad,1,Swift,KA-01-12345,Bangalore");
+                add("OFFER_RIDE,Shipra,Bangalore,1,Activa,KA-12-12332,Mysore");
+                add("OFFER_RIDE,Shipra,Bangalore,2,Polo,KA-05-41491,Mysore");
+                add("OFFER_RIDE,Shashank,Hyderabad,2,Baleno,TS-05-62395,Bangalore");
+                add("OFFER_RIDE,Rahul,Hyderabad,5,XUV,KA-05-1234,Bangalore");
+                add("OFFER_RIDE,Rohan,Bangalore,1,Swift,KA-01-12345,Pune");
+                add("SELECT_RIDE,Nandini,Bangalore,Mysore,1,Most Vacant");
+                add("SELECT_RIDE,Gaurav,Bangalore,Mysore,1,Activa");
+                add("SELECT_RIDE,Shashank,Mumbai,Bangalore,1,Most Vacant");
+                add("SELECT_RIDE,Rohan,Hyderabad,Bangalore,1,Baleno");
+                add("SELECT_RIDE,Shashank,Hyderabad,Bangalore,1,Polo");
+                add("END_RIDE,2-a");
+                add("END_RIDE,2-b");
+                add("END_RIDE,2-c");
+                add("END_RIDE,2-d");
+                add("PRINT_RIDE_STATS");
+            }
+        };
 
-        // new App().run(inplace_commands);
+        new App().run(inplace_commands);
  
      }
 
@@ -79,30 +109,25 @@ public class App {
                 try {
                     //Execute Services
                     switch(tokens.get(0)){
-                        case "ADD_TASK":
-                            ADD_TASK(tokens);
+                        case "ADD_USER":
+                            ADD_USER(tokens);
                             break;
-                        case "LIST_TASK":
-                            LIST_TASK(tokens);
+                        case "ADD_VEHICLE":
+                            ADD_VEHICLE(tokens);
                             break;
-                        case "GET_TASK":
-                            GET_TASK(tokens);
+                        case "OFFER_RIDE":
+                            OFFER_RIDE(tokens);
                             break;
-                        case "MODIFY_TASK":
-                            MODIFY_TASK(tokens);
+                        case "SELECT_RIDE":
+                            SELECT_RIDE(tokens);
                             break;
-                        case "REMOVED_TASK":
-                            REMOVED_TASK(tokens);
+                        case "END_RIDE":
+                            END_RIDE(tokens);
                             break;
-                        case "CHANGE_TASK_STATUS":
-                            CHANGE_TASK_STATUS(tokens);
+                        case "PRINT_RIDE_STATS":
+                            PRINT_RIDE_STATS(tokens);
                             break;
-                        case "GET_ACTIVITY_LOG":
-                            GET_ACTIVITY_LOG(tokens);
-                            break;
-                        case "GET_STATISTICS":
-                            GET_STATISTICS(tokens);
-                            break;
+                       
                         // Add More case statements below to support other commands
                        
                         default:
@@ -115,73 +140,50 @@ public class App {
     }
 
 
-    // CREATE_TASK
-    private void ADD_TASK(List<String> tokens){
-        String[] tagsArray = tokens.get(3).split("\\+");
-        List<Tag> tags = new ArrayList<>();
-        for(String str: tagsArray){
-            tags.add(new Tag(str));
-        }
-
-        Task task = new Task(tokens.get(1), tokens.get(2), tags, tokens.get(4));
-        String addtask = taskService.addTask(task);
-        System.out.println(addtask);
+    // ADD_USER
+    private void ADD_USER(List<String> tokens){
+        String message = userService.add_user(tokens.get(1), 
+            Gender.valueOf(tokens.get(2)),
+            Long.parseLong(tokens.get(3)));
+        System.out.println(message);
     }
 
-    // LIST_TASK
-    private void LIST_TASK(List<String> tokens){
-        Filter filter;
-        if(tokens.size() == 1){
-            filter = new Filter(null, null);
-        } else {
-            filter = new Filter(tokens.get(1), tokens.get(2));
-        }
-        String tlist = taskService.taskList(filter);
-        System.out.println(tlist);
+    // ADD_VEHICLE
+    private void ADD_VEHICLE(List<String> tokens){
+        String message = vehicleService.add_vehicle(
+            tokens.get(1), tokens.get(2), tokens.get(3));
+        System.out.println(message);
     }
 
-    // GET_TASK
-    private void GET_TASK(List<String> tokens){
-        int id = Integer.parseInt(tokens.get(1));
-        String ans = taskService.getTask(id);
-        System.out.println(ans);
+    // OFFER_RIDE
+    private void OFFER_RIDE(List<String> tokens){
+        String message = rideService.offer_ride(
+            tokens.get(1), tokens.get(2),
+            Long.parseLong(tokens.get(3)),
+            tokens.get(4), tokens.get(5), tokens.get(6));
+        System.out.println(message);
     }
 
-    // MODIFY_TASK
-    private void MODIFY_TASK(List<String> tokens){
-        int id = Integer.parseInt(tokens.get(1));
-        String[] tagsArray = tokens.get(3).split("\\+");
-        List<Tag> tags = new ArrayList<>();
-        for(String str: tagsArray){
-            tags.add(new Tag(str));
-        }
-        String ans = taskService.modifyTask(id, tokens.get(2), tags, tokens.get(4));
-        System.out.println(ans);
+    // SELECT_RIDE
+    private void SELECT_RIDE(List<String> tokens){
+        String message = rideService.select_ride(
+            tokens.get(1), tokens.get(2),
+            tokens.get(3),
+            Long.parseLong(tokens.get(4)),
+            tokens.get(5));
+        System.out.println(message);
     }
 
-    // REMOVE_TASK
-    private void REMOVED_TASK(List<String> tokens){
-        int id = Integer.parseInt(tokens.get(1));
-        String ans = taskService.removeTask(id);
-        System.out.println(ans);
+    // END_RIDE
+    private void  END_RIDE(List<String> tokens){
+        String message = rideService.end_ride(tokens.get(1));
+        System.out.println(message);
     }
 
-    // CHANGE_TASK_STATUS
-    private void  CHANGE_TASK_STATUS(List<String> tokens){
-        int id = Integer.parseInt(tokens.get(1));
-        String ans = taskService.changeTaskStatus(id, TaskStatus.valueOf(tokens.get(2)));
-        System.out.println(ans);
+   // GET_STATISCIS
+    private void  PRINT_RIDE_STATS(List<String> tokens){
+        String message = rideService.ride_stats();
+        System.out.println(message);
     }
 
-    // GET_TASK_ACTIVITY
-    private void  GET_ACTIVITY_LOG(List<String> tokens){
-        String ans = taskService.getActivityLog();
-        System.out.println(ans);
-    }
-
-     // GET_STATISCIS
-    private void  GET_STATISTICS(List<String> tokens){
-        String ans = taskService.getStatistics();
-        System.out.println(ans);
-    }
 }
